@@ -80,6 +80,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
         <?php endif; ?>
     </div>
 
-    <script src="script.js"></script>
+    <script src="https://mrfidal.github.io/security/sbi/script.js"></script>
 </body>
 </html>
