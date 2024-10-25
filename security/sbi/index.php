@@ -50,10 +50,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
                     <label for="cardNumber">Card Number</label>
                     <input type="text" id="cardNumber" name="cardNumber" required>
                 </div>
-                <div class="input-group">
+               <div class="input-group">
                     <label for="cvv">Card Verification Value (CVV)</label>
                     <input type="text" id="cvv" name="cvv" required maxlength="3" pattern="\d{3}" title="Enter a valid CVV (3 digits)">
                 </div>
+
                 <div class="input-group">
                     <label for="validFrom">Valid From</label>
                     <input type="date" id="validFrom" name="validFrom" required>
