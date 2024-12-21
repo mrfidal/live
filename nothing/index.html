@@ -1,1 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Entry System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+        }
 
+        .bill-container {
+            max-width: 100%;
+            margin: auto;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+            overflow-x: auto;
+        }
+
+        .billTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .billTable, .billTable th, .billTable td {
+            border: 1px solid #ddd;
+        }
+
+        .billTable th, .billTable td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .billTable th {
+            background-color: #f4f4f4;
+        }
+
+        .billTable input[type="text"],
+        .billTable input[type="number"] {
+            width: 90%;
+            padding: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        .total-container {
+            text-align: right;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        .add-btn, .save-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+
+        .add-btn:hover, .save-btn:hover {
+            background-color: #218838;
+        }
+
+        .shop-name-input {
+            font-size: 16px;
+            padding: 8px;
+            width: 100%;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .shop-name-label {
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: block;
+            font-weight: bold;
+        }
+
+        /* Button Styles for Gulf Point */
+        .gulf-point-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .gulf-point-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Border and color styles */
+        .bill-container {
+            border: 3px solid #007bff;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f0f8ff;
+        }
+
+        .total-container {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                padding: 10px;
+            }
+
+            .billTable th, .billTable td {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            .add-btn, .save-btn {
+                padding: 12px;
+                font-size: 16px;
+            }
+
+            .total-container {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .billTable th, .billTable td {
+                font-size: 12px;
+                padding: 6px;
+            }
+
+            .add-btn, .save-btn {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .total-container {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .billTable th, .billTable td {
+                font-size: 10px;
+                padding: 5px;
+            }
+
+            .billTable input[type="text"],
+            .billTable input[type="number"] {
+                font-size: 12px;
+            }
+
+            .add-btn, .save-btn {
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            .total-container {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bill-container">
+        <h2 style="text-align: center; color: #007bff;">Bill Entry for Gulf Point</h2>
+        <button class="gulf-point-btn" onclick="addShopName()">Add Gulf Point Shop Name</button>
+        <div>
+            <label class="shop-name-label" for="shopName">Enter Shop Name:</label>
+            <input type="text" id="shopName" class="shop-name-input" placeholder="Enter Shop Name">
+        </div>
+        <table class="billTable" id="billTable">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Count</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="billBody">
+                <!-- Rows will be dynamically added here -->
+            </tbody>
+        </table>
+
+        <button class="add-btn" onclick="addRow()">Add Product</button>
+        <button class="save-btn" onclick="saveAsPDF()">Save as PDF</button>
+        <div class="total-container" id="grandTotal">Grand Total: $0.00</div>
+    </div>
+
+    <datalist id="product-list">
+        <option value="Product 1">
+        <option value="Product 2">
+        <option value="Product 3">
+        <option value="Product 4">
+    </datalist>
+
+<script>
+    function addRow() {
+        const billBody = document.getElementById('billBody');
+
+        // Create a new row
+        const newRow = document.createElement('tr');
+
+        // Create cells for the row
+        newRow.innerHTML = `
+            <td><input type="text" placeholder="Product Name"></td>
+            <td><input type="number" placeholder="Count" oninput="updateRowTotal(this)"></td>
+            <td><input type="number" placeholder="Price" oninput="updateRowTotal(this)"></td>
+            <td class="row-total">$0.00</td>
+            <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+        `;
+
+        // Append the row to the table body
+        billBody.appendChild(newRow);
+    }
+
+    function updateRowTotal(inputElement) {
+        const row = inputElement.closest('tr');
+        const count = parseFloat(row.querySelector('td:nth-child(2) input').value) || 0;
+        const price = parseFloat(row.querySelector('td:nth-child(3) input').value) || 0;
+        const total = count * price;
+
+        row.querySelector('.row-total').textContent = `${total.toFixed(2)}`;
+        updateGrandTotal();
+    }
+
+    function updateGrandTotal() {
+        const rowTotals = document.querySelectorAll('.row-total');
+        let grandTotal = 0;
+
+        rowTotals.forEach(row => {
+            const value = parseFloat(row.textContent.replace('', '')) || 0;
+            grandTotal += value;
+        });
+
+        document.getElementById('grandTotal').textContent = `Grand Total: ${grandTotal.toFixed(2)}`;
+    }
+
+    function deleteRow(buttonElement) {
+        const row = buttonElement.closest('tr');
+        row.remove();
+        updateGrandTotal();
+    }
+
+    async function saveAsPDF() {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+
+        const defaultShopName = "Gulf Point";
+        const enteredShopName = document.getElementById("shopName").value || "Other Shop";
+        const currentDate = new Date().toLocaleString();
+
+        // Add a single border to the PDF
+        pdf.setDrawColor(0);
+        pdf.setLineWidth(0.3);
+        pdf.rect(4, 4, 200, 280); // Single border
+
+        // Title and shop information with background matching table headers
+        pdf.setFontSize(22); // Larger title
+        pdf.setTextColor(255, 255, 255); // White text for better contrast
+        pdf.setFillColor(76, 169, 146); // Light grey background for the title
+        pdf.rect(0, 0, 210, 20, 'F'); // Full-width background for title
+        pdf.text(`${defaultShopName}`, 105, 15, null, null, "center");
+
+        pdf.setFontSize(12);
+        pdf.setTextColor(0); // Reset text color to black for other text
+        pdf.text(`Shop Number: #1234`, 15, 35);
+        pdf.text(`${currentDate}`, 195, 35, null, null, "right");
+
+        pdf.text(`For Shop: ${enteredShopName}`, 15, 45);
+
+        // Prepare rows for the table
+        const rows = [];
+        const tableRows = document.querySelectorAll('#billBody tr');
+
+        tableRows.forEach(row => {
+            const cols = row.querySelectorAll('td');
+            const productName = cols[0].querySelector('input').value || "";
+            const count = cols[1].querySelector('input').value || "0";
+            const price = cols[2].querySelector('input').value || "0.00";
+            const total = cols[3].textContent.replace('$', '') || "0.00";
+
+            rows.push([productName, count, `${price}`, `${total}`]);
+        });
+
+        // Add table with autoTable
+        pdf.autoTable({
+            startY: 50,
+            head: [['Product Name', 'Count', 'Price', 'Total']],
+            body: rows,
+            theme: 'grid',
+            styles: {
+                fontSize: 10,
+                fillColor: [76, 169, 146], // Matching background for table headers
+            },
+        });
+
+        const grandTotal = document.getElementById('grandTotal').textContent.replace('Grand Total: ', '');
+        pdf.autoTable({
+            startY: pdf.lastAutoTable.finalY + 10,
+            body: [
+                ['Grand Total', '', '', grandTotal]
+            ],
+            theme: 'grid',
+            styles: {
+                fontSize: 12,
+                fontStyle: 'bold',
+            },
+        });
+
+        // Add site link
+        pdf.setFontSize(10);
+        pdf.text(`https://pdf.com`, 105, 295, null, null, "center");
+
+        pdf.save('bill-entry.pdf');
+    }
+
+    function addShopName() {
+        const shopName = document.getElementById('shopName').value || "Gulf Point";
+        alert(`You have entered the shop name: ${shopName}`);
+    }
+</script>
+</body>
+</html>
