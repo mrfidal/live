@@ -98,6 +98,12 @@
       margin-bottom: 20px;
     }
 
+    .pricing-box a {
+      display: inline-block;
+      width: 100%;
+      text-decoration: none;
+    }
+
     .pricing-box button {
       padding: 12px 25px;
       background-color: #28a745;
@@ -147,6 +153,26 @@
       }
     }
 
+    /* Notification Style */
+    .notification {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 1rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    .notification.show {
+      display: block;
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -157,27 +183,42 @@
       <div class="pricing-box">
         <h3>Basic Plan</h3>
         <p>Perfect for individuals</p>
-        <div class="price">$9.99/month</div>
-        <button>Subscribe</button>
+        <div class="price">1500/life long</div>
+        <a href="https://google.com/basic"><button>Subscribe</button></a>
       </div>
 
       <!-- Enterprise Plan with Free Trial -->
       <div class="pricing-box">
         <h3>Enterprise Plan</h3>
         <p>Full access to all services</p>
-        <div class="price">$99.99/month</div>
+        <div class="price">2300/life long</div>
         <div class="trial">Free 7-day trial</div>
-        <button>Subscribe</button>
+        <a href="https://google.com/enterprise"><button>Subscribe</button></a>
       </div>
     </div>
   </div>
 
+  <!-- Custom Notification -->
+  <div class="notification" id="notification">
+    Thank you for subscribing!
+  </div>
+
   <script>
-    const buttons = document.querySelectorAll('.pricing-box button');
-    
+    const buttons = document.querySelectorAll('.pricing-box a');
+    const notification = document.getElementById('notification');
+
     buttons.forEach(button => {
-      button.addEventListener('click', function() {
-        alert('Thank you for subscribing!');
+      button.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default link action
+        notification.classList.add('show');
+
+        // Hide the notification after 3 seconds
+        setTimeout(() => {
+          notification.classList.remove('show');
+          
+          // Redirect to the specified URL after 3 seconds
+          window.location.href = event.target.closest('a').href;
+        }, 3000);
       });
     });
   </script>
