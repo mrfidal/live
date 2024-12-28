@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Billing Site</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      color: #333;
+    }
+
+    .container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .pricing-section {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .pricing-box {
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      width: 300px;
+      padding: 30px;
+      border-radius: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.5s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pricing-box::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 300%;
+      height: 300%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .pricing-box:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .pricing-box h3 {
+      font-size: 2rem;
+      margin-bottom: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .pricing-box p {
+      font-size: 1.1rem;
+      color: #d1d1d1;
+      margin-bottom: 25px;
+    }
+
+    .pricing-box .price {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .pricing-box .trial {
+      font-size: 1rem;
+      color: #ff5733;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .pricing-box a {
+      display: inline-block;
+      width: 100%;
+      text-decoration: none;
+    }
+
+    .pricing-box button {
+      padding: 12px 25px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      width: 100%;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .pricing-box button:hover {
+      background-color: #218838;
+      transform: translateY(-2px);
+    }
+
+    .pricing-box .price,
+    .pricing-box .trial,
+    .pricing-box h3 {
+      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    @media (max-width: 768px) {
+      .pricing-section {
+        flex-direction: column;
+        gap: 40px;
+      }
+
+      .pricing-box {
+        width: 90%;
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.2;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0.6;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 0.2;
+      }
+    }
+
+    .notification {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 1rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    .notification.show {
+      display: block;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="pricing-section">
+      <div class="pricing-box">
+        <h3>Basic Plan</h3>
+        <p>Perfect for individuals</p>
+        <div class="price">1500/life long</div>
+        <a href="https://end-vuln.web.app/shop-bill/we/fid.html"><button>Subscribe</button></a>
+      </div>
+
+      <div class="pricing-box">
+        <h3>Enterprise Plan</h3>
+        <p>Full access to all services</p>
+        <div class="price">2300/life long</div>
+        <div class="trial">Free 4-day trial</div>
+        <a href="https://end-vuln.web.app/shop-bill/shall/sdfojlsdfnl/index.html"><button>Subscribe</button></a>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="notification" id="notification">
+    Thank you for subscribing!
+  </div>
+
+  <script>
+    const buttons = document.querySelectorAll('.pricing-box a');
+    const notification = document.getElementById('notification');
+
+    buttons.forEach(button => {
+      button.addEventListener('click', function(event) {
+        event.preventDefault(); 
+        notification.classList.add('show');
+
+
+        setTimeout(() => {
+          notification.classList.remove('show');
+          
+          window.location.href = event.target.closest('a').href;
+        }, 3000);
+      });
+    });
+  </script>
+
+</body>
+</html>
