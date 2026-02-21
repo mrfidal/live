@@ -8,7 +8,6 @@ def check_link_or_exit(url):
     try:
         response = requests.head(url, timeout=5)
 
-        # If HEAD is not allowed, try GET
         if response.status_code == 405:
             response = requests.get(url, timeout=5)
 
