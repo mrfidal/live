@@ -21,6 +21,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+def set_winsize(fd, cols, rows):
+    try:
+        winsize = struct.pack('HHHH', rows, cols, 0, 0)
+        fcntl.ioctl(fd, termios.TIOCSWINSZ, winsize)
+    except Exception as e:
+        print(f"Error setting winsize: {e}")
+
 class TerminalSession:
     def __init__(self, websocket: WebSocket):
         self.websocket = websocket
@@ -30,33 +37,25 @@ class TerminalSession:
     def create_process(self, cols: int = 120, rows: int = 30):
         shell = os.environ.get('SHELL', '/bin/bash')
         
-        master_fd, slave_fd = pty.openpty()
-        
-        self.pid = os.fork()
+        self.pid, self.master_fd = pty.fork()
         
         if self.pid == 0:
             try:
+                set_winsize(0, cols, rows)
+                
                 os.setsid()
                 
-                winsize = struct.pack('HHHH', rows, cols, 0, 0)
-                termios.tcsetwinsize(slave_fd, termios.TCSANOW, winsize)
-                
-                os.dup2(slave_fd, 0)
-                os.dup2(slave_fd, 1)
-                os.dup2(slave_fd, 2)
-                
-                os.close(master_fd)
+                os.dup2(0, 1)
+                os.dup2(0, 2)
                 
                 os.execvp(shell, [shell])
             except Exception as e:
-                print(f"Error: {e}")
+                print(f"Child process error: {e}")
                 os._exit(1)
         else:
-            os.close(slave_fd)
-            self.master_fd = master_fd
-            
             fl = fcntl.fcntl(self.master_fd, fcntl.F_GETFL)
             fcntl.fcntl(self.master_fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+            set_winsize(self.master_fd, cols, rows)
     
     def write(self, data: str):
         try:
@@ -73,13 +72,11 @@ class TerminalSession:
     
     def resize(self, cols: int, rows: int):
         try:
-            winsize = struct.pack('HHHH', rows, cols, 0, 0)
-            termios.tcsetwinsize(self.master_fd, termios.TCSANOW, winsize)
-        except Exception:
-            pass
+            set_winsize(self.master_fd, cols, rows)
+        except Exception as e:
+            print(f"Resize error: {e}")
     
     async def read_output(self):
-        buffer = ""
         while True:
             try:
                 rlist, _, _ = select.select([self.master_fd], [], [], 0.1)
@@ -88,17 +85,10 @@ class TerminalSession:
                         data = os.read(self.master_fd, 4096)
                         if data:
                             decoded = data.decode('utf-8', errors='ignore')
-                            buffer += decoded
-                            
-                            if '\n' in buffer:
-                                lines = buffer.split('\n')
-                                buffer = lines[-1]
-                                for line in lines[:-1]:
-                                    if line.strip() or line == '':
-                                        await self.websocket.send_text(json.dumps({
-                                            'type': 'terminal:data',
-                                            'data': line + '\n'
-                                        }))
+                            await self.websocket.send_text(json.dumps({
+                                'type': 'terminal:data',
+                                'data': decoded
+                            }))
                     except BlockingIOError:
                         pass
                     except OSError:
