@@ -5,7 +5,6 @@ import { useStore } from '@/lib/store';
 export default function Terminal() {
   const { terminalCommands, addWindow } = useStore();
   const [history, setHistory] = useState<string[]>([]);
-  const [currentDir, setCurrentDir] = useState('/home/cipher');
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [inputValue, setInputValue] = useState('');
@@ -18,18 +17,49 @@ export default function Terminal() {
     wsRef.current = ws;
 
     ws.onopen = () => {
-      console.log('Connected to terminal');
+      console.log('Connected to terminal backend');
+      setHistory(prev => [...prev, '\x1b[32mConnected to secure terminal\x1b[0m', '']);
     };
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === 'terminal:data') {
-        setHistory(prev => [...prev, data.data]);
+        setHistory(prev => {
+          const lastIndex = prev.length - 1;
+          if (prev[lastIndex] && !prev[lastIndex].endsWith('\n') && data.data.includes('\n')) {
+            const newHistory = [...prev];
+            const parts = data.data.split('\n');
+            newHistory[lastIndex] = newHistory[lastIndex] + parts[0];
+            for (let i = 1; i < parts.length - 1; i++) {
+              newHistory.push(parts[i]);
+            }
+            if (parts[parts.length - 1]) {
+              newHistory.push(parts[parts.length - 1]);
+            }
+            return newHistory;
+          } else {
+            const lines = data.data.split('\n');
+            const newHistory = [...prev];
+            for (let i = 0; i < lines.length - 1; i++) {
+              newHistory.push(lines[i]);
+            }
+            if (lines[lines.length - 1]) {
+              newHistory.push(lines[lines.length - 1]);
+            }
+            return newHistory;
+          }
+        });
       }
     };
 
     ws.onerror = (error) => {
       console.error('WebSocket error:', error);
+      setHistory(prev => [...prev, '\x1b[31mFailed to connect to terminal backend\x1b[0m', '']);
+    };
+
+    ws.onclose = () => {
+      console.log('WebSocket disconnected');
+      setHistory(prev => [...prev, '\x1b[31mTerminal backend disconnected\x1b[0m', '']);
     };
 
     return () => {
@@ -45,7 +75,9 @@ export default function Terminal() {
         type: 'terminal:write',
         data: command + '\n'
       }));
+      return true;
     }
+    return false;
   };
 
   const runCommand = (cmdLine: string) => {
@@ -64,7 +96,7 @@ export default function Terminal() {
         width: 900,
         height: 650,
       });
-      setHistory(prev => [...prev, `$ ${cmdLine}`, `[+] Launched ${found.name}`, '']);
+      setHistory(prev => [...prev, `$ ${cmdLine}`, `\x1b[32m[+] Launched ${found.name}\x1b[0m`, '']);
       setInputValue('');
       return;
     }
@@ -114,11 +146,17 @@ export default function Terminal() {
     inputRef.current?.focus();
   }, [history]);
 
+  const stripAnsi = (text: string) => {
+    return text.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+  };
+
   return (
     <div className="bg-black text-green-400 font-mono text-sm h-full flex flex-col">
       <div className="flex-1 overflow-y-auto p-3">
         {history.map((line, i) => (
-          <div key={i}>{line}</div>
+          <div key={i} className="whitespace-pre-wrap">
+            {stripAnsi(line)}
+          </div>
         ))}
         <div ref={outputEndRef} />
       </div>
@@ -132,6 +170,7 @@ export default function Terminal() {
           onKeyDown={handleKeyDown}
           className="flex-1 bg-transparent outline-none text-green-400 font-mono"
           autoFocus
+          spellCheck={false}
         />
       </div>
     </div>
