@@ -48,7 +48,8 @@ class TerminalSession:
                 os.close(master_fd)
                 
                 os.execvp(shell, [shell])
-            except Exception:
+            except Exception as e:
+                print(f"Error: {e}")
                 os._exit(1)
         else:
             os.close(slave_fd)
@@ -60,8 +61,8 @@ class TerminalSession:
     def write(self, data: str):
         try:
             os.write(self.master_fd, data.encode())
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Write error: {e}")
     
     def terminate(self):
         try:
@@ -78,7 +79,7 @@ class TerminalSession:
             pass
     
     async def read_output(self):
-        loop = asyncio.get_event_loop()
+        buffer = ""
         while True:
             try:
                 rlist, _, _ = select.select([self.master_fd], [], [], 0.1)
@@ -86,21 +87,31 @@ class TerminalSession:
                     try:
                         data = os.read(self.master_fd, 4096)
                         if data:
-                            await self.websocket.send_text(json.dumps({
-                                'type': 'terminal:data',
-                                'data': data.decode('utf-8', errors='ignore')
-                            }))
+                            decoded = data.decode('utf-8', errors='ignore')
+                            buffer += decoded
+                            
+                            if '\n' in buffer:
+                                lines = buffer.split('\n')
+                                buffer = lines[-1]
+                                for line in lines[:-1]:
+                                    if line.strip() or line == '':
+                                        await self.websocket.send_text(json.dumps({
+                                            'type': 'terminal:data',
+                                            'data': line + '\n'
+                                        }))
                     except BlockingIOError:
                         pass
                     except OSError:
                         break
                 await asyncio.sleep(0.01)
-            except Exception:
+            except Exception as e:
+                print(f"Read error: {e}")
                 break
 
 @app.websocket("/terminal")
 async def terminal_endpoint(websocket: WebSocket):
     await websocket.accept()
+    print("Client connected")
     
     session = TerminalSession(websocket)
     session.create_process()
@@ -117,7 +128,7 @@ async def terminal_endpoint(websocket: WebSocket):
                 session.resize(data.get('cols', 120), data.get('rows', 30))
                 
     except WebSocketDisconnect:
-        pass
+        print("Client disconnected")
     finally:
         read_task.cancel()
         session.terminate()
@@ -128,4 +139,5 @@ async def root():
 
 if __name__ == "__main__":
     PORT = int(os.environ.get("PORT", 5000))
+    print(f"Server running on port {PORT}")
     uvicorn.run(app, host="0.0.0.0", port=PORT)
